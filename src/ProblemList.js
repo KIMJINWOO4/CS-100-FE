@@ -1,5 +1,3 @@
-// ProblemList.js
-
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import apiClient from './axiosInstance';
@@ -34,26 +32,31 @@ const ProblemList = ({ problems, title }) => {
     return (
         <div className='bg-white shadow rounded-lg p-4 mb-6'>
             <h3 className='text-xl font-semibold mb-4'>{title}</h3>
-            <ul className='space-y-3'>
-                {problems.map((problem) => {
-                    const gradeKey = Object.keys(gradeColors).find((key) => problem.grade.startsWith(key));
-                    const gradeColor = gradeColors[gradeKey] || 'text-gray-500';
+            {problems.map((group) => (
+                <div key={group.title} className='mb-6'>
+                    <h4 className='text-lg font-bold mb-2'>{group.title}</h4>
+                    <ul className='space-y-3'>
+                        {group.problems.map((problem) => {
+                            const gradeKey = Object.keys(gradeColors).find((key) => problem.grade.startsWith(key));
+                            const gradeColor = gradeColors[gradeKey] || 'text-gray-500';
 
-                    return (
-                        <li
-                            key={problem.examId}
-                            className='flex justify-between items-center p-2 bg-gray-100 rounded cursor-pointer hover:bg-gray-200'
-                            onClick={() => handleProblemClick(problem.examId)}
-                        >
-                            <div className='flex items-center'>
-                                <span className={`font-bold ${gradeColor} mr-2`}>{problem.grade}</span>
-                                <span>{problem.title}</span>
-                            </div>
-                            <span className='text-sm text-gray-500'>{problem.limitTime}</span>
-                        </li>
-                    );
-                })}
-            </ul>
+                            return (
+                                <li
+                                    key={problem.examId}
+                                    className='flex justify-between items-center p-2 bg-gray-100 rounded cursor-pointer hover:bg-gray-200'
+                                    onClick={() => handleProblemClick(problem.examId)}
+                                >
+                                    <div className='flex items-center'>
+                                        <span className={`font-bold ${gradeColor} mr-2`}>{problem.grade}</span>
+                                        <span>{problem.title}</span>
+                                    </div>
+                                    <span className='text-sm text-gray-500'>{problem.limitTime}</span>
+                                </li>
+                            );
+                        })}
+                    </ul>
+                </div>
+            ))}
         </div>
     );
 };

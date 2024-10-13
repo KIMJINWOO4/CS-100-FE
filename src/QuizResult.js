@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 
 const QuizResult = () => {
@@ -7,10 +7,26 @@ const QuizResult = () => {
 
     const { resultData, examData, userAnswers } = location.state || {};
 
-    // resultData, examData, 또는 userAnswers가 없으면 메인 페이지로 리디렉션
-    if (!resultData || !examData || !userAnswers) {
-        navigate('/');
-        return null;
+    const [isLoading, setIsLoading] = useState(true);
+
+    useEffect(() => {
+        if (!resultData || !examData || !userAnswers) {
+            // 데이터를 로드하거나, 필요한 경우 리디렉션
+            navigate('/');
+        } else {
+            setIsLoading(false);
+        }
+    }, [resultData, examData, userAnswers, navigate]);
+
+    if (isLoading) {
+        return (
+            <div className='flex items-center justify-center min-h-screen'>
+                <div className='text-center'>
+                    <div className='loader mb-4'></div>
+                    <p className='text-xl font-semibold text-gray-700'>결과를 불러오는 중입니다...</p>
+                </div>
+            </div>
+        );
     }
 
     const handleFinish = () => {

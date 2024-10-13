@@ -1,5 +1,3 @@
-// User.js
-
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import apiClient from './axiosInstance';
@@ -32,10 +30,13 @@ const User = () => {
         fetchAllProblems();
         fetchAvailableProblems();
         fetchUserProfile(userId);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [navigate]);
+
     const handleCreateExam = () => {
         navigate('/create-problem');
     };
+
     const fetchUserProfile = async (userId) => {
         try {
             const response = await apiClient.get(`/member/${userId}`, {
@@ -55,6 +56,23 @@ const User = () => {
             console.error('사용자 프로필을 가져오는 데 실패했습니다:', error);
         }
     };
+
+    // 문제들을 제목별로 그룹화하는 함수
+    const groupProblemsByTitle = (problems) => {
+        const grouped = problems.reduce((acc, problem) => {
+            const { title } = problem;
+            if (!acc[title]) {
+                acc[title] = {
+                    title: title,
+                    problems: [],
+                };
+            }
+            acc[title].problems.push(problem);
+            return acc;
+        }, {});
+        return Object.values(grouped);
+    };
+
     const fetchAllProblems = async () => {
         try {
             const response = await apiClient.get('/exam', {
@@ -63,20 +81,19 @@ const User = () => {
                 },
             });
             const exams = response.data.exams || [];
-            setAllProblems(
-                exams.map((exam) => ({
-                    examId: exam.id,
-                    title: exam.title,
-                    grade: exam.grade,
-                    limitTime: `제한시간 ${exam.limit_second}초`,
-                }))
-            );
+            const problems = exams.map((exam) => ({
+                examId: exam.id,
+                title: exam.title,
+                grade: exam.grade,
+                limitTime: `제한시간 ${exam.limit_second}초`,
+            }));
+            const groupedProblems = groupProblemsByTitle(problems);
+            setAllProblems(groupedProblems);
         } catch (error) {
             console.error('모든 문제 데이터를 가져오는 데 실패했습니다:', error);
         }
     };
 
-    // 내가 풀 수 있는 문제 데이터 가져오기 함수
     const fetchAvailableProblems = async () => {
         try {
             const userId = localStorage.getItem('userId');
@@ -94,14 +111,14 @@ const User = () => {
             });
 
             const exams = response.data.exams || [];
-            setAvailableProblems(
-                exams.map((exam) => ({
-                    examId: exam.id,
-                    title: exam.title,
-                    grade: exam.grade,
-                    limitTime: `제한시간 ${exam.limit_second}초`,
-                }))
-            );
+            const problems = exams.map((exam) => ({
+                examId: exam.id,
+                title: exam.title,
+                grade: exam.grade,
+                limitTime: `제한시간 ${exam.limit_second}초`,
+            }));
+            const groupedProblems = groupProblemsByTitle(problems);
+            setAvailableProblems(groupedProblems);
         } catch (error) {
             console.error('내가 풀 수 있는 문제 데이터를 가져오는 데 실패했습니다:', error);
         }

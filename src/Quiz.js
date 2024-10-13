@@ -32,6 +32,7 @@ const Quiz = () => {
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
     const [answers, setAnswers] = useState(Array(questions.length).fill(''));
     const [timeLeft, setTimeLeft] = useState(examData.limitSecond); // 초 단위
+    const [isSubmitting, setIsSubmitting] = useState(false); // 로딩 상태 추가
 
     useEffect(() => {
         if (timeLeft > 0) {
@@ -62,6 +63,7 @@ const Quiz = () => {
     };
 
     const handleSubmit = async () => {
+        setIsSubmitting(true); // 제출 시작 시 로딩 상태로 변경
         try {
             // memberId와 examId 가져오기
             const memberId = parseInt(localStorage.getItem('userId'), 10);
@@ -93,8 +95,22 @@ const Quiz = () => {
         } catch (error) {
             console.error('제출 과정에서 오류가 발생했습니다:', error);
             // 오류 처리 (예: 오류 메시지 표시)
+        } finally {
+            setIsSubmitting(false); // 제출 완료 후 로딩 상태 해제 (사실 navigate로 인해 컴포넌트가 언마운트되므로 필요는 없음)
         }
     };
+
+    if (isSubmitting) {
+        // 로딩 중일 때 로딩 스피너 표시
+        return (
+            <div className='flex items-center justify-center min-h-screen'>
+                <div className='text-center'>
+                    <div className='loader mb-4'></div>
+                    <p className='text-xl font-semibold text-gray-700'>제출 중입니다. 잠시만 기다려주세요...</p>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className='h-screen flex flex-col justify-between p-4 max-w-3xl mx-auto'>

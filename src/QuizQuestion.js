@@ -6,6 +6,8 @@ function QuizQuestion({ question, answer, onAnswerChange }) {
     return (
         <div className='mb-4'>
             <h2 className='text-xl font-semibold'>{question.questionText}</h2>
+            {/* 문제 출처 표시 */}
+            {question.reference && <p className='text-sm text-zinc-500 font-bold mt-2'>{question.reference}</p>}
             {/* 객관식과 주관식에 따라 다른 렌더링 */}
             {question.type === '객관식' ? (
                 // 객관식인 경우 선택지 렌더링
@@ -35,7 +37,7 @@ function QuizQuestion({ question, answer, onAnswerChange }) {
                 // 주관식인 경우 텍스트 입력 필드
                 <input
                     type='text'
-                    className='w-full p-4 mt-10 text-lg border rounded'
+                    className='w-full p-4 mt-4 text-lg border rounded'
                     value={answer}
                     onChange={(e) => onAnswerChange(e.target.value)}
                 />

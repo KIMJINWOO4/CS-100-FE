@@ -26,6 +26,7 @@ const Quiz = () => {
         id: problem.id,
         questionText: problem.content,
         type: problem.type,
+        reference: problem.reference, // reference 추가
         // 기타 필요한 속성 추가
     }));
 
@@ -96,7 +97,7 @@ const Quiz = () => {
             console.error('제출 과정에서 오류가 발생했습니다:', error);
             // 오류 처리 (예: 오류 메시지 표시)
         } finally {
-            setIsSubmitting(false); // 제출 완료 후 로딩 상태 해제 (사실 navigate로 인해 컴포넌트가 언마운트되므로 필요는 없음)
+            setIsSubmitting(false);
         }
     };
 

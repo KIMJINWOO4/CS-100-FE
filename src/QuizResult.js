@@ -32,7 +32,6 @@ const QuizResult = () => {
     const handleFinish = () => {
         navigate('/user');
     };
-
     return (
         <div className='flex flex-col items-center justify-center min-h-screen bg-gray-50 p-4'>
             <div className='w-full max-w-4xl p-8 bg-white shadow-lg rounded-lg'>
@@ -49,10 +48,17 @@ const QuizResult = () => {
                 </div>
                 <div className='text-center mb-8'>
                     <h2 className='text-2xl font-bold text-gray-800'>
-                        {examData.title} 총 {resultData.questions.length}문제 중{' '}
-                        <span className='text-green-600'>{resultData.correctCount || 0}</span>문제 맞추셨습니다.
+                        {examData.title} {resultData.questions.length}문제에 대한 평균 점수는{' '}
+                        <span className='text-green-600'>
+                            {(
+                                resultData.questions.reduce((acc, cur) => acc + (cur.score || 0), 0) /
+                                resultData.questions.length
+                            ).toFixed(1)}
+                        </span>
+                        점 입니다.
                     </h2>
                 </div>
+
                 <div className='space-y-8'>
                     {resultData.questions.map((question, index) => (
                         <div key={index} className='mb-6'>

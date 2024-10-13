@@ -40,6 +40,7 @@ const Quiz = () => {
         } else {
             handleSubmit(); // 시간이 다 되면 자동 제출
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [timeLeft]);
 
     const handleAnswerChange = (answer) => {

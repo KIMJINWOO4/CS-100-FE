@@ -11,7 +11,7 @@ import ProblemCreation from './ProblemCreation';
 
 function App() {
     return (
-        <BrowserRouter basename='https://cs-100.netlify.app'>
+        <BrowserRouter>
             <Routes>
                 <Route path='/' element={<Home />} />
                 <Route path='/login' element={<Login />} />

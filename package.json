@@ -1,7 +1,6 @@
 {
     "name": "cs-fe2",
     "version": "0.1.0",
-    "homepage": "https://cs-100.netlify.app",
     "private": true,
     "dependencies": {
         "@heroicons/react": "^2.1.5",

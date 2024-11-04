@@ -14,27 +14,35 @@ const Quiz = () => {
     // location.state에서 examData 가져오기
     const examData = location.state?.examData;
 
-    // examData가 없으면 메인 페이지로 리디렉션
+    // Initialize states unconditionally
+    const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+    const [answers, setAnswers] = useState([]);
+    const [timeLeft, setTimeLeft] = useState(examData ? examData.limitSecond : 0); // 초 단위
+    const [isSubmitting, setIsSubmitting] = useState(false); // 로딩 상태 추가
+
+    // Initialize questions safely
+    const questions = examData
+        ? examData.problems.map((problem) => ({
+              id: problem.id,
+              questionText: problem.content,
+              type: problem.type,
+              reference: problem.reference, // reference 추가
+              // 기타 필요한 속성 추가
+          }))
+        : [];
+
+    // useEffect for redirecting if examData is missing
     useEffect(() => {
         if (!examData) {
             navigate('/');
+        } else {
+            // Initialize answers when examData is available
+            setAnswers(Array(questions.length).fill(''));
+            setTimeLeft(examData.limitSecond);
         }
-    }, [examData, navigate]);
+    }, [examData, navigate, questions.length]);
 
-    // examData.problems를 사용하여 questions 설정
-    const questions = examData.problems.map((problem) => ({
-        id: problem.id,
-        questionText: problem.content,
-        type: problem.type,
-        reference: problem.reference, // reference 추가
-        // 기타 필요한 속성 추가
-    }));
-
-    const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-    const [answers, setAnswers] = useState(Array(questions.length).fill(''));
-    const [timeLeft, setTimeLeft] = useState(examData.limitSecond); // 초 단위
-    const [isSubmitting, setIsSubmitting] = useState(false); // 로딩 상태 추가
-
+    // Timer useEffect
     useEffect(() => {
         if (timeLeft > 0) {
             const timer = setTimeout(() => setTimeLeft(timeLeft - 1), 1000);
@@ -101,6 +109,22 @@ const Quiz = () => {
         }
     };
 
+    const handleFinishEarly = async () => {
+        // Check if at least one answer is provided
+        const hasAnswered = answers.some((answer) => answer.trim() !== '');
+        if (!hasAnswered) return;
+
+        // Set unanswered questions to "."
+        const updatedAnswers = answers.map((answer) => (answer.trim() === '' ? '.' : answer));
+        setAnswers(updatedAnswers);
+
+        // Submit the quiz
+        await handleSubmit();
+    };
+
+    // Determine if at least one question has been answered
+    const hasAtLeastOneAnswer = answers.some((answer) => answer.trim() !== '');
+
     if (isSubmitting) {
         // 로딩 중일 때 로딩 스피너 표시
         return (
@@ -116,9 +140,9 @@ const Quiz = () => {
     return (
         <div className='h-screen flex flex-col justify-between p-4 max-w-3xl mx-auto'>
             <QuizHeader
-                title={examData.title || 'Quiz'}
+                title={examData?.title || 'Quiz'}
                 timeLimit={Math.floor(timeLeft / 60)} // 남은 시간 (분 단위)
-                level={examData.grade || 'Level'}
+                level={examData?.grade || 'Level'}
                 category={`문제 수: ${questions.length}`}
             />
             <QuizQuestion
@@ -133,6 +157,17 @@ const Quiz = () => {
                 onPrevious={handlePrevious}
                 onSubmit={handleSubmit}
             />
+            {/* Finish Early Button */}
+            {hasAtLeastOneAnswer && (
+                <div className='flex justify-center mt-4'>
+                    <button
+                        onClick={handleFinishEarly}
+                        className='px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition-colors'
+                    >
+                        풀이 종료하기
+                    </button>
+                </div>
+            )}
             <div className='text-lg text-gray-600 text-center mt-4'>
                 남은 제출 시간: {Math.floor(timeLeft / 60)}:{String(timeLeft % 60).padStart(2, '0')}
             </div>

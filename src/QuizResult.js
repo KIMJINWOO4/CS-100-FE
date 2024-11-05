@@ -71,7 +71,7 @@ const QuizResult = () => {
                                 <p
                                     className={`p-3 rounded ${
                                         userAnswers[index]
-                                            ? question.score > 0
+                                            ? question.score > 40
                                                 ? 'bg-green-100 text-green-700'
                                                 : 'bg-red-100 text-red-700'
                                             : 'bg-gray-100 text-gray-700'
